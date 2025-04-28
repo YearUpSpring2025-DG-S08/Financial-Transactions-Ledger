@@ -5,9 +5,10 @@ import java.util.Scanner;
 public class Console {
     Scanner scanner = new Scanner(System.in);
 
+    @SuppressWarnings("unused")
     public int promptForInt(String prompt){
 
-        int result = -1;
+        int result;
         while(true){
             try{
                 System.out.print(prompt);
@@ -23,7 +24,7 @@ public class Console {
     }
 
     public double promptForDouble(String prompt){
-        double result = -1;
+        double result;
         while(true){
             try{
                 System.out.print(prompt);
@@ -40,8 +41,7 @@ public class Console {
 
     public String promptForString(String prompt){
         System.out.println(prompt);
-        String result = scanner.nextLine();
-        return result;
+        return scanner.nextLine();
     }
 
 }

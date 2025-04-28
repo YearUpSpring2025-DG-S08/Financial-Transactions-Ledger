@@ -3,14 +3,17 @@ package com.pluralsight;
 public class Ledger {
 
     private String date;
-    private double time;
+    private String time;
+    private String description;
     private String vendor;
     private double amount;
 
-    public Ledger(String date, double time, String vendor, double amount){
+
+    public Ledger(String date, String time, String description, String vendor, double amount){
 
         this.date = date;
         this.time = time;
+        this.description = description;
         this.vendor = vendor;
         this.amount = amount;
 
@@ -20,8 +23,12 @@ public class Ledger {
         return date;
     }
 
-    public double getTime() {
+    public String getTime() {
         return time;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public String getVendor() {
@@ -34,7 +41,7 @@ public class Ledger {
 
     public String getFormattedLedger(){
         return
-                String.format("%f | %f | %s | %f", this.date, this.time, this.vendor, this.amount);
+                String.format("%s | %s | %s | %s | %f", this.date, this.time, this.description, this.vendor, this.amount);
     }
 
 }

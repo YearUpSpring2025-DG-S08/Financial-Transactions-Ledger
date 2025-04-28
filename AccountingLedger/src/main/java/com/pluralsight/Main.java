@@ -1,10 +1,10 @@
 package com.pluralsight;
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 import java.util.Scanner;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class Main {
@@ -15,54 +15,6 @@ public class Main {
         // import information on the transactions.csv from ChatGPT
 
         showHomeScreen();
-
-        /*
-        Ledger:
-        A) All: display all entries
-        D) Deposits: display deposits into the account
-        P) Payments: display negative entries (payments)
-        R) Reports: New screen that allows user to run pre-define reports or to run a custom search
-            1) Month to Date
-            2) Previous Month
-            3) Year To Date
-            4) Previous Year
-            5) Search by Vendor: prompt user for the vendor name and display all entries for that vendor
-            0) Back: go back to the report page
-            H) Home: go back to home page
-         */
-
-        String welcomeToLedgerPrompt = """
-                Welcome to the ledger
-                Choose from the options below:""";
-        String choice = console.promptForString(welcomeToLedgerPrompt).trim();
-
-
-        switch (choice){
-            case "A":
-                // this screen will show all the entries within the ledger csv file
-                break;
-            case "D":
-                // this screen will display ONLY the deposits into the account
-                break;
-            case "P":
-                // this screen will display ONLY the negative entries (payments)
-                break;
-            case "R":
-                // this screen will allow users to run pre-define reports or to run a custom search
-//                1) Month to Date
-//                2) Previous Month
-//                3) Year To Date
-//                4) Previous Year
-//                5) Search by Vendor: prompt user for the vendor name and display all entries for that vendor
-//                0) Back: go back to the report page
-//                H) Home: go back to home page
-                break;
-            case "H":
-                // this screen will bring the users back to the home page
-            default:
-                System.out.println("Invalid entry. Please try again!");
-        }
-
 
         // Challenge: Look into challenging myself once I finish the project
     }
@@ -91,15 +43,17 @@ public class Main {
         switch (choice){
             case "D":
                 // this screen will be where the user is prompted to input deposit information which will save to the csv file
-                // if it is just a deposit, should I have the user also input the rest of the data in the Ledger Class?
-                int counter = 0;
-                addDeposit(ledger, scanner, counter);
+                boolean isPayment = false;
+                addTransaction(isPayment);
                 break;
             case "P":
+                isPayment = true;
+                addTransaction(isPayment);
                 // this screen will be where the user is prompted to input debit information and save to csv
                 break;
             case "L":
                 // this screen will be where the ledger history will appear
+                showLedgerScreen();
                 break;
             case "X":
                 // this choice will exit the program
@@ -111,52 +65,122 @@ public class Main {
         }
     }
 
-    public static int addDeposit(Ledger[] ledger, Scanner scanner, int counter){
+    public static void showLedgerScreen(){
+        String welcomeToLedgerPrompt = """
+                Welcome to the ledger
+                Choose from the options below:""";
+        String choice = console.promptForString(welcomeToLedgerPrompt);
+        /*
+        Ledger:
+        A) All: display all entries
+        D) Deposits: display deposits into the account
+        P) Payments: display negative entries (payments)
+        R) Reports: New screen that allows user to run pre-define reports or to run a custom search
+            1) Month to Date
+            2) Previous Month
+            3) Year To Date
+            4) Previous Year
+            5) Search by Vendor: prompt user for the vendor name and display all entries for that vendor
+            0) Back: go back to the report page
+            H) Home: go back to home page
+         */
 
-        if(counter >= ledger.length){
-            System.out.println("The ledger is maxed out");
-            return counter;
+        switch (choice){
+            case "A":
+                // this screen will show all the entries within the ledger csv file
+                break;
+            case "D":
+                // this screen will display ONLY the deposits into the account
+                break;
+            case "P":
+                // this screen will display ONLY the negative entries (payments)
+                break;
+            case "R":
+                // this screen will allow users to run pre-defined reports or to run a custom search
+//                1) Month to Date
+//                2) Previous Month
+//                3) Year To Date
+//                4) Previous Year
+//                5) Search by Vendor: prompt user for the vendor name and display all entries for that vendor
+//                0) Back: go back to the report page
+//                H) Home: go back to home page
+                break;
+            case "H":
+                // this screen will bring the users back to the home page
+            default:
+                System.out.println("Invalid entry. Please try again!");
+        }
+    }
+
+    public static int addTransaction(boolean isPayment){
+        // combining the methods of addDeposit and addPayment together because of similar processes
+        // creates a boolean for isPayment to distinguish between both methods
+        int counter = 0;
+
+            // will auto complete the date to the current date when the entry is made
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate today = LocalDate.now();
+            String date = today.format(formatter);
+
+            // will auto complete the time to the current time when the entry is made
+            DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("HH:mm:ss");
+            LocalTime now = LocalTime.now();
+            String time = now.format(formatter1);
+
+            String inputDescriptionPrompt = """
+                    Add description of deposit""";
+            String description = console.promptForString(inputDescriptionPrompt);
+
+            String inputVendorPrompt = """
+                    Add vendor information:""";
+            String vendor = console.promptForString(inputVendorPrompt);
+
+            String inputAmountPrompt = """
+                    Input the amount to deposit: \n""";
+            double amount = console.promptForDouble(inputAmountPrompt);
+
+        if(isPayment){
+            amount = -Math.abs(amount); // this line will ensure that the amount given for a payment is negative
         }
 
-        try{
-            System.out.println("Input the following information: ");
-            String inputDatePrompt = "Add date of transaction: ";
-            String date = console.promptForString(inputDatePrompt);
-            
-            DateTimeFormatter formatter;
-            formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+            Ledger newEntry = new Ledger(date, time, description, vendor, amount);
 
-            LocalDate showDate = LocalDate.parse(date, formatter);
+            ledger[counter] = newEntry;
+            counter++;
+
+        String entry = String.format("%s | %s | %s | %s | %f", date, time, description, vendor, amount);
 
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        try(FileWriter writer = new FileWriter("transactions.csv", true)){
+            writer.write(entry + "\n");
+            System.out.println("Transaction was successful!");
+        } catch (IOException e) {
+            System.out.println("Could not complete transaction" + e.getMessage());
         }
-        return 0;
+        return counter + 1;
     }
 
     private static Ledger[] getFinancialTransactions(){
 
         try{
             BufferedReader reader = new BufferedReader(new FileReader("transactions.csv"));
-            Ledger[] ledgerTemp = new Ledger[1000];
+            Ledger[] tempLedger = new Ledger[1000];
 
-            int i = 0;
-            String history;
+            int size = 0;
+            String dataString;
 
-            while((history = reader.readLine()) != null){
-
-                ledgerTemp[i] = getTransactionsFromEncodedString(history);
-
-                i++;
-
+            while((dataString = reader.readLine()) != null){
+                tempLedger[size] = getTransactionsFromEncodedString(dataString);
+                size++;
             }
+            Ledger[] finalLedger = Arrays.copyOf(tempLedger, size);
 
-            return Arrays.copyOf(ledgerTemp, i);
+            return finalLedger;
 
-        } catch(Exception e){
-            throw new RuntimeException();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+
     }
 
     private static Ledger[] ledger = getFinancialTransactions();
@@ -166,11 +190,12 @@ public class Main {
        String[] temp = encodedLedger.split(Pattern.quote("|"));
 
        String date = temp[0];
-       double time = Integer.parseInt(temp[1]);
-       String vendor = temp[2];
-       double amount = Integer.parseInt(temp[3]);
+       String time = temp[1];
+       String description = temp[2];
+       String vendor = temp[3];
+       Double amount = Double.parseDouble(temp[4]);
 
-        return new Ledger(date, time, vendor, amount);
+        return new Ledger(date, time, description, vendor, amount);
 
     }
 
