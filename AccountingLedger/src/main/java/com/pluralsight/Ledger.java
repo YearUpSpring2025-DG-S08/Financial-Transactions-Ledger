@@ -2,11 +2,11 @@ package com.pluralsight;
 
 public class Ledger {
 
-    private String date;
-    private String time;
-    private String description;
-    private String vendor;
-    private double amount;
+    private final String date;
+    private final String time;
+    private final String description;
+    private final String vendor;
+    private final double amount;
 
 
     public Ledger(String date, String time, String description, String vendor, double amount){
@@ -41,7 +41,15 @@ public class Ledger {
 
     public String getFormattedLedger(){
         return
-                String.format("%s | %s | %s | %s | %f", this.date, this.time, this.description, this.vendor, this.amount);
+                String.format("%s|%s|%s|%s|%.3f", this.date, this.time, this.description, this.vendor, this.amount);
     }
 
+    public String toString(){
+        return String.format("%s|%s|%s|%s|%.3f"
+        , this.getDate()
+        , this.getTime()
+        , this.getDescription()
+        , this.getVendor()
+        , this.getAmount());
+    }
 }

@@ -28,16 +28,6 @@ public class Main {
                 X) Exit""";
         String choice = console.promptForString(homeScreenPrompt).trim().toUpperCase();
 
-        // application will include several screens:
-        /*
-        Home Screen:
-        Application should continue to run until User chooses to Exit
-        D) Add deposit: prompt user for deposit information and save to csv file
-        P) Make Payment Debit: prompt user for debit information and save to csv file
-        L) Ledger: display the ledger screen
-        X) Exit
-         */
-
         // put the choice code within a do/while loop so that it will rerun until the desired choice to exit the app is made
         switch (choice){
             case "D":
@@ -65,29 +55,25 @@ public class Main {
     public static void showLedgerScreen(){
         String welcomeToLedgerPrompt = """
                 Welcome to the ledger
-                Choose from the options below:""";
-        String choice = console.promptForString(welcomeToLedgerPrompt);
-        /*
-        Ledger:
-        A) All: display all entries
-        D) Deposits: display deposits into the account
-        P) Payments: display negative entries (payments)
-        R) Reports: New screen that allows user to run pre-define reports or to run a custom search
-            1) Month to Date
-            2) Previous Month
-            3) Year To Date
-            4) Previous Year
-            5) Search by Vendor: prompt user for the vendor name and display all entries for that vendor
-            0) Back: go back to the report page
-            H) Home: go back to home page
-         */
+                Choose from the options below:
+                A) Display all entries
+                D) Display deposits
+                P) Display payments
+                R) Run reports""";
+        String choice = console.promptForString(welcomeToLedgerPrompt).trim().toUpperCase();
 
         switch (choice){
             case "A":
                 // this screen will show all the entries within the ledger csv file
+                for(Ledger line : ledger){
+                    if(line != null){
+                        System.out.println(line);
+                    }
+                }
                 break;
             case "D":
                 // this screen will display ONLY the deposits into the account
+                getTransactionByAmount(ledger);
                 break;
             case "P":
                 // this screen will display ONLY the negative entries (payments)
@@ -153,6 +139,24 @@ public class Main {
             System.out.println("Transaction was successful!");
         } catch (IOException e) {
             System.out.println("Could not complete transaction" + e.getMessage());
+        }
+    }
+
+    public static void getTransactionByAmount(Ledger[] ledger){
+        double amount = 0;
+        for(Ledger line : ledger){
+            if(line.getAmount() == Math.abs(amount)){
+                System.out.println(line);
+            }
+        }
+    }
+
+    public static void getTransactionByNegativeAmount(Ledger[] ledger){
+        double amount = 0;
+        for(Ledger line : ledger){
+            if(line.getAmount() == Math.negateExact((int) amount)){
+                System.out.println(line);
+            }
         }
     }
 
