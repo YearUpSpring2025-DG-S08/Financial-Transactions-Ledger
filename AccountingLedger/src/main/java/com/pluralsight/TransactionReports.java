@@ -98,7 +98,7 @@ public class TransactionReports {
 
         boolean found = false;
         for (Ledger line : ledger) {
-            if (line != null && line.vendor().equalsIgnoreCase(input)) {
+            if (line != null && line.vendor().toLowerCase().contains(input.toLowerCase())) {
                 if (!found) {
                     System.out.println(line);
                     found = true;
@@ -113,6 +113,7 @@ public class TransactionReports {
     public static void getTransactionsByCustomSearch(List<Ledger> ledger) {
         Scanner scanner = new Scanner(System.in);
 
+        // prompt user for individual search criteria
         System.out.print("Enter Start date or leave blank:");
         String startDate = scanner.nextLine();
         System.out.print("Enter End date or leave blank:");
@@ -124,12 +125,13 @@ public class TransactionReports {
         System.out.print("Enter amount or leave blank:");
         String amount = scanner.nextLine();
 
+        // create ArrayList<> to hold the filtered search
         List<Ledger> filteredSearch = new ArrayList<>(ledger);
 
         if (!startDate.isBlank()) {
             try {
-                LocalDate start = LocalDate.parse(startDate);
-                filteredSearch.removeIf(entry -> !LocalDate.parse(entry.date()).isBefore(start));
+                LocalDate start = LocalDate.parse(startDate, FORMATTER);
+                filteredSearch.removeIf(entry -> !LocalDate.parse(entry.date(), FORMATTER).isBefore(start));
                 // the .removeIf method from the List<> interface will remove any entry before the given startDate
             } catch (DateTimeParseException e) {
                 System.out.println("Invalid date format");
@@ -137,20 +139,20 @@ public class TransactionReports {
         }
         if (!endDate.isBlank()) {
             try {
-                LocalDate end = LocalDate.parse(endDate);
-                filteredSearch.removeIf(entry -> !LocalDate.parse(entry.date()).isAfter(end));
+                LocalDate end = LocalDate.parse(endDate, FORMATTER);
+                filteredSearch.removeIf(entry -> !LocalDate.parse(entry.date(), FORMATTER).isAfter(end));
                 // the .removeIf method from the List<> interface will remove any entry after the given endDate
             } catch (DateTimeParseException e) {
                 System.out.println("Invalid date format");
             }
         }
         if (!description.isBlank()) {
-            filteredSearch.removeIf(entry -> !entry.description().contains(description));
+            filteredSearch.removeIf(entry -> !entry.description().toLowerCase().contains(description));
             // the .removeIf method from the List<> interface will remove any entry
             // that does not contain what the user input
         }
         if (!vendor.isBlank()) {
-            filteredSearch.removeIf(entry -> !entry.vendor().contains(vendor));
+            filteredSearch.removeIf(entry -> !entry.vendor().toLowerCase().contains(vendor));
             // the .removeIf method from the List<> interface will remove any entry
             // that does not contain what the user input
         }
