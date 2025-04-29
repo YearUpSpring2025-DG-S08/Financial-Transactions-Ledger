@@ -40,7 +40,8 @@ public class Console {
 
     public String promptForString(String prompt){
         System.out.println(prompt);
-        String input = scanner.nextLine().trim();
+        String input = scanner.nextLine().trim().toLowerCase();
+        // edits the return input so that the first letter in the input would be capitalized
         return input.substring(0, 1).toUpperCase() + input.substring(1);
     }
 }
