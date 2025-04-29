@@ -5,7 +5,6 @@ import java.util.Scanner;
 public class Console {
     Scanner scanner = new Scanner(System.in);
 
-    @SuppressWarnings("unused")
     public int promptForInt(String prompt){
 
         int result;
@@ -41,7 +40,7 @@ public class Console {
 
     public String promptForString(String prompt){
         System.out.println(prompt);
-        return scanner.nextLine();
+        String input = scanner.nextLine().trim();
+        return input.substring(0, 1).toUpperCase() + input.substring(1);
     }
-
 }

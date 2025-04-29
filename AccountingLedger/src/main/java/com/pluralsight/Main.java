@@ -4,12 +4,11 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.regex.Pattern;
-import java.util.Scanner;
 import java.time.format.DateTimeFormatter;
 
 public class Main {
     public static Console console = new Console();
-    public static Scanner scanner = new Scanner(System.in);
+
     public static void main(String[] args) {
         // Transactions should be read from and saved to a transaction file: transactions.csv
         // import information on the transactions.csv from ChatGPT
@@ -23,9 +22,9 @@ public class Main {
         System.out.println("Welcome to the Financial Transaction Tracker");
         String homeScreenPrompt = """
                 Choose from the options below:
-                D) Add deposit: prompt user for deposit information and save to csv file
-                P) Make Payment Debit: prompt user for debit information and save to csv file
-                L) Ledger: display the ledger screen
+                D) Add deposit
+                P) Make Payment
+                L) Ledger
                 X) Exit""";
         String choice = console.promptForString(homeScreenPrompt).trim().toUpperCase();
 
@@ -43,12 +42,10 @@ public class Main {
         switch (choice){
             case "D":
                 // this screen will be where the user is prompted to input deposit information which will save to the csv file
-                boolean isPayment = false;
-                addTransaction(isPayment);
+                addTransaction(false);
                 break;
             case "P":
-                isPayment = true;
-                addTransaction(isPayment);
+                addTransaction(true);
                 // this screen will be where the user is prompted to input debit information and save to csv
                 break;
             case "L":
@@ -112,7 +109,7 @@ public class Main {
         }
     }
 
-    public static int addTransaction(boolean isPayment){
+    public static void addTransaction(boolean isPayment){
         // combining the methods of addDeposit and addPayment together because of similar processes
         // creates a boolean for isPayment to distinguish between both methods
         int counter = 0;
@@ -128,7 +125,7 @@ public class Main {
             String time = now.format(formatter1);
 
             String inputDescriptionPrompt = """
-                    Add description of deposit""";
+                    Add description:""";
             String description = console.promptForString(inputDescriptionPrompt);
 
             String inputVendorPrompt = """
@@ -148,7 +145,7 @@ public class Main {
             ledger[counter] = newEntry;
             counter++;
 
-        String entry = String.format("%s | %s | %s | %s | %f", date, time, description, vendor, amount);
+        String entry = String.format("%s|%s|%s|%s|%.2f", date, time, description, vendor, amount);
 
 
         try(FileWriter writer = new FileWriter("transactions.csv", true)){
@@ -157,14 +154,13 @@ public class Main {
         } catch (IOException e) {
             System.out.println("Could not complete transaction" + e.getMessage());
         }
-        return counter + 1;
     }
 
     private static Ledger[] getFinancialTransactions(){
 
         try{
             BufferedReader reader = new BufferedReader(new FileReader("transactions.csv"));
-            Ledger[] tempLedger = new Ledger[1000];
+            Ledger[] tempLedger = new Ledger[100];
 
             int size = 0;
             String dataString;
@@ -173,9 +169,8 @@ public class Main {
                 tempLedger[size] = getTransactionsFromEncodedString(dataString);
                 size++;
             }
-            Ledger[] finalLedger = Arrays.copyOf(tempLedger, size);
 
-            return finalLedger;
+            return Arrays.copyOf(tempLedger, size);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -183,20 +178,22 @@ public class Main {
 
     }
 
-    private static Ledger[] ledger = getFinancialTransactions();
+    private static final Ledger[] ledger = getFinancialTransactions();
 
     private static Ledger getTransactionsFromEncodedString(String encodedLedger){
 
        String[] temp = encodedLedger.split(Pattern.quote("|"));
 
-       String date = temp[0];
-       String time = temp[1];
-       String description = temp[2];
-       String vendor = temp[3];
-       Double amount = Double.parseDouble(temp[4]);
+        if(temp.length != 5){
+            throw new IllegalArgumentException("There is some information missing!");
+        } else {
+            String date = temp[0];
+            String time = temp[1];
+            String description = temp[2];
+            String vendor = temp[3];
+            double amount = Double.parseDouble(temp[4]);
 
-        return new Ledger(date, time, description, vendor, amount);
-
+            return new Ledger(date, time, description, vendor, amount);
+        }
     }
-
 }
