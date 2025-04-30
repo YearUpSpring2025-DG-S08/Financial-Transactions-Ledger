@@ -5,11 +5,11 @@ import java.util.Scanner;
 public class Console {
     Scanner scanner = new Scanner(System.in);
 
-    public int promptForInt(String prompt){
+    public int promptForInt(String prompt) {
 
         int result;
-        while(true){
-            try{
+        while (true) {
+            try {
                 System.out.print(prompt);
                 result = scanner.nextInt();
                 scanner.nextLine();
@@ -22,10 +22,10 @@ public class Console {
         return result;
     }
 
-    public double promptForDouble(String prompt){
+    public double promptForDouble(String prompt) {
         double result;
-        while(true){
-            try{
+        while (true) {
+            try {
                 System.out.print(prompt);
                 result = scanner.nextDouble();
                 scanner.nextLine();
@@ -38,10 +38,17 @@ public class Console {
         return result;
     }
 
-    public String promptForString(String prompt){
-        System.out.println(prompt);
-        String input = scanner.nextLine().trim().toLowerCase();
-        // edits the return input so that the first letter in the input would be capitalized
-        return input.substring(0, 1).toUpperCase() + input.substring(1);
+    public String promptForString(String prompt) {
+        while (true) {
+            System.out.println(prompt);
+            String input = scanner.nextLine().trim().toLowerCase();
+
+            if (input.isEmpty()) {
+                System.out.println("Input cannot be empty. Please try again");
+                // edits the return input so that the first letter in the input would be capitalized
+            } else {
+                return input.substring(0, 1).toUpperCase() + input.substring(1).toLowerCase();
+            }
+        }
     }
 }

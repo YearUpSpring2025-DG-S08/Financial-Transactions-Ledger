@@ -12,7 +12,7 @@ import static com.pluralsight.Main.console;
 import static com.pluralsight.Main.ledger;
 
 public class TransactionReports {
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     // creates a constant DateTimeFormatter variable to be used in each method sort method
 
     private static List<Ledger> getSortedDates(LocalDate thisMonth, LocalDate today) {
@@ -21,8 +21,7 @@ public class TransactionReports {
 
         for (Ledger line : ledger) {
             try {
-                LocalDate day = LocalDate.parse(line.date(), TransactionReports.FORMATTER);
-                if (!day.isBefore(thisMonth) && !day.isAfter(today)) {
+                if(!line.date().isBefore(thisMonth) && !line.date().isAfter(today)){
                     sortedMonthToDate.add(line);
                     // for each line in ledger, the if statement will add desired dates to the ArrayList<>()
                 }
@@ -40,9 +39,9 @@ public class TransactionReports {
 
         // creating a ArrayList using the List interface to hold sorted dates
         List<Ledger> sortedMonthToDate = getSortedDates(thisMonth, today);
-        sortedMonthToDate.sort(Comparator.comparing(line -> LocalDate.parse(line.date(), FORMATTER)));
+        sortedMonthToDate.sort(Comparator.comparing(Ledger::date));
         // using the .sort() method to sort what the Comparator.comparing() method defines how the data
-        // needs to be sorted; in this case each line of Ledger is parsed into a LocalDate and formatted by formatter
+        // needs to be sorted; in this case sorting by the Ledger dates
         // and sorted in chronological order
         for (Ledger line : sortedMonthToDate) {
             System.out.println(line);
@@ -57,7 +56,7 @@ public class TransactionReports {
         LocalDate lastMonth = today.minusMonths(1).withDayOfMonth(1);
 
         List<Ledger> previousMonthToDate = getSortedDates(lastMonth, today);
-        previousMonthToDate.sort(Comparator.comparing(line -> LocalDate.parse(line.date(), FORMATTER)));
+        previousMonthToDate.sort(Comparator.comparing(Ledger::date));
         for (Ledger line : previousMonthToDate) {
             System.out.println(line);
         }
@@ -71,7 +70,7 @@ public class TransactionReports {
         // and creates a day for that year of month: 1 and day of month: 1
 
         List<Ledger> sortedYearToDate = getSortedDates(thisYear, today);
-        sortedYearToDate.sort(Comparator.comparing(line -> LocalDate.parse(line.date(), FORMATTER)));
+        sortedYearToDate.sort(Comparator.comparing(Ledger::date));
         for (Ledger line : sortedYearToDate) {
             System.out.println(line);
         }
@@ -85,7 +84,7 @@ public class TransactionReports {
         // and creates a day for that year of month: 1
 
         List<Ledger> sortedPreviousYear = getSortedDates(thisYear, today);
-        sortedPreviousYear.sort(Comparator.comparing(line -> LocalDate.parse(line.date(), FORMATTER)));
+        sortedPreviousYear.sort(Comparator.comparing(Ledger::date));
         for (Ledger line : sortedPreviousYear) {
             System.out.println(line);
         }
@@ -113,49 +112,64 @@ public class TransactionReports {
     public static void getTransactionsByCustomSearch(List<Ledger> ledger) {
         Scanner scanner = new Scanner(System.in);
 
-        // prompt user for individual search criteria
-        System.out.print("Enter Start date or leave blank:");
-        String startDate = scanner.nextLine();
-        System.out.print("Enter End date or leave blank:");
-        String endDate = scanner.nextLine();
-        System.out.print("Enter description or leave blank:");
-        String description = scanner.nextLine().toLowerCase();
-        System.out.print("Enter vendor or leave blank:");
-        String vendor = scanner.nextLine().toLowerCase();
-        System.out.print("Enter amount or leave blank:");
-        String amount = scanner.nextLine();
-
         // create ArrayList<> to hold the filtered search
         List<Ledger> filteredSearch = new ArrayList<>(ledger);
 
-        if (!startDate.isBlank()) {
-            try {
-                LocalDate start = LocalDate.parse(startDate, FORMATTER);
-                filteredSearch.removeIf(entry -> !LocalDate.parse(entry.date(), FORMATTER).isBefore(start));
-                // the .removeIf method from the List<> interface will remove any entry before the given startDate
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid date format");
+        // prompt user for individual search criteria
+        while(true) {
+            System.out.print("Enter Start date or leave blank: ");
+            String startDate = scanner.nextLine().trim();
+            if (!startDate.isBlank()) {
+                scanner.nextLine();
+                break;
             }
+                try {
+                    LocalDate start = LocalDate.parse(startDate, FORMATTER);
+                    filteredSearch.removeIf(entry -> entry.date().isBefore(start));
+                    // the .removeIf method from the List<> interface will remove any entry before the given startDate
+                    break;
+                } catch (DateTimeParseException e) {
+                    System.out.println("Invalid date format. Try Again");
+                    scanner.nextLine();
+                }
         }
-        if (!endDate.isBlank()) {
-            try {
-                LocalDate end = LocalDate.parse(endDate, FORMATTER);
-                filteredSearch.removeIf(entry -> !LocalDate.parse(entry.date(), FORMATTER).isAfter(end));
-                // the .removeIf method from the List<> interface will remove any entry after the given endDate
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid date format");
+
+        while(true) {
+            System.out.print("Enter End date or leave blank: ");
+            String endDate = scanner.nextLine();
+            if (!endDate.isBlank()) {
+                break;
             }
+                try {
+                    LocalDate end = LocalDate.parse(endDate, FORMATTER);
+                    filteredSearch.removeIf(entry -> !entry.date().isAfter(end));
+                    // the .removeIf method from the List<> interface will remove any entry after the given endDate
+                } catch (DateTimeParseException e) {
+                    System.out.println("Invalid date format");
+                }
         }
+
+        System.out.print("Enter description or leave blank: ");
+        String description = scanner.nextLine().toLowerCase();
+
         if (!description.isBlank()) {
             filteredSearch.removeIf(entry -> !entry.description().toLowerCase().contains(description));
             // the .removeIf method from the List<> interface will remove any entry
             // that does not contain what the user input
         }
+
+        System.out.print("Enter vendor or leave blank: ");
+        String vendor = scanner.nextLine().toLowerCase();
+
         if (!vendor.isBlank()) {
             filteredSearch.removeIf(entry -> !entry.vendor().toLowerCase().contains(vendor));
             // the .removeIf method from the List<> interface will remove any entry
             // that does not contain what the user input
         }
+
+        System.out.print("Enter amount or leave blank: ");
+        String amount = scanner.nextLine();
+
         if (!amount.isBlank()) {
             try {
                 double inputAmount = Double.parseDouble(amount);

@@ -6,19 +6,22 @@ import static com.pluralsight.TransactionReports.*;
 import static com.pluralsight.TransactionReports.getTransactionsByPreviousYear;
 import static com.pluralsight.TransactionReports.getTransactionsByVendor;
 import static com.pluralsight.TransactionsHandler.*;
+import static com.pluralsight.StyledMenus.*;
 
 public class UIPrompts {
 
     public static void showHomeScreen() {
         String choice;
         do {
-            System.out.println("Welcome to the Financial Transaction Tracker");
+            styledTitle("Welcome to the Financial Transaction Tracker!");
             String homeScreenPrompt = """
                     Choose from the options below:
-                    D) Add deposit
-                    P) Make Payment
-                    L) Ledger
-                    X) Exit""";
+                    
+                    [D] Add deposit
+                    [P] Make Payment - Debit
+                    [L] Ledger Menu
+                    [X] Exit
+                    """;
             choice = console.promptForString(homeScreenPrompt).trim().toUpperCase();
 
             // put the choice code within a do/while loop so that it will rerun until the desired choice to exit the app is made
@@ -49,23 +52,20 @@ public class UIPrompts {
     public static void showLedgerScreen() {
         String choice;
         do {
+            styledTitle("Ledger Menu");
             String welcomeToLedgerPrompt = """
-                    Welcome to the ledger
                     Choose from the options below:
-                    A) Display all entries
-                    D) Display deposits
-                    P) Display payments
-                    R) Run reports""";
+                    
+                    [A] Display all entries
+                    [D] Display deposits
+                    [P] Display payments
+                    [R] Run reports""";
             choice = console.promptForString(welcomeToLedgerPrompt).trim().toUpperCase();
 
             switch (choice) {
                 case "A":
                     // this screen will show all the entries within the ledger csv file
-                    for (Ledger line : ledger) {
-                        if (line != null) {
-                            System.out.println(line);
-                        }
-                    }
+                    getALlTransactions(ledger);
                     break;
                 case "D":
                     // this screen will display ONLY the deposits into the account
@@ -91,16 +91,18 @@ public class UIPrompts {
     public static void runReportsSearch() {
         String choice;
         do {
+            styledTitle("Reports Search Menu");
             String inputReportsPrompt = """
                     Choose one of the search options below:
-                    1) Month to Date
-                    2) Previous Month
-                    3) Year To Date
-                    4) Previous Year
-                    5) Search by Vendor
-                    6) Custom Search
-                    0) Go back to the Ledger page
-                    H) Go back to Home page""";
+                    
+                    [1] Month to Date
+                    [2] Previous Month
+                    [3] Year To Date
+                    [4] Previous Year
+                    [5] Search by Vendor
+                    [6] Custom Search
+                    [0] Go back to the Ledger page
+                    [H] Go back to Home page""";
             choice = console.promptForString(inputReportsPrompt);
 
             switch (choice) {
@@ -139,6 +141,5 @@ public class UIPrompts {
         }
         while (!choice.equals("H"));
     }
-
 
 }

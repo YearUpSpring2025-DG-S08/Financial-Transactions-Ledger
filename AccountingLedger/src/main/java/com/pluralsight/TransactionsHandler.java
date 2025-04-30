@@ -4,28 +4,24 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 import static com.pluralsight.Main.console;
 import static com.pluralsight.Main.ledger;
 
 public class TransactionsHandler {
 
-
     public static void addTransaction(boolean isPayment){
         // combining the methods of addDeposit and addPayment together because of similar processes
         // creates a boolean for isPayment to distinguish between both methods
 
         // will auto complete the date to the current date when the entry is made
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate today = LocalDate.now();
-        String date = today.format(formatter);
 
         // will auto complete the time to the current time when the entry is made
-        DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("HH:mm:ss");
         LocalTime now = LocalTime.now();
-        String time = now.format(formatter1);
 
         String inputDescriptionPrompt = """
                     Add description:""";
@@ -36,14 +32,29 @@ public class TransactionsHandler {
         String vendor = console.promptForString(inputVendorPrompt);
 
         String inputAmountPrompt = """
-                    Input the amount to deposit: \n""";
+                    Input an amount: \n""";
         double amount = console.promptForDouble(inputAmountPrompt);
 
         if(isPayment){
             amount = -Math.abs(amount); // this line will ensure that the amount given for a payment is negative
         }
 
-        saveTransaction(date, time, description, vendor, amount);
+        saveTransaction(today, now, description, vendor, amount);
+    }
+
+    public static void getALlTransactions(List<Ledger> ledger){
+        System.out.println(Ledger.getFormattedLedgerTextHeader());
+        ledger.removeIf(Objects::isNull);
+        // this line will remove any instance of an object being read within the ledger as null
+        ledger.sort(Comparator.comparing(Ledger::date).reversed());
+        // the .sort method and the Comparator.comparing() method will sort through the entries
+        // in the ArrayList<>(Ledger) and compare them by the dates: Ledger::date
+        // and set them in chronological order using .reversed() puts newest entries first(top of list)
+        for (Ledger line : ledger) {
+            if (line != null) {
+                System.out.println(line.getFormattedLedger());
+            }
+        }
     }
 
     public static void getDepositTransactions(List<Ledger> ledger){
@@ -52,9 +63,11 @@ public class TransactionsHandler {
             return;
         }
 
+        ledger.sort(Comparator.comparing(Ledger::date).reversed());
+        System.out.println(Ledger.getFormattedLedgerTextHeader());
         for(Ledger line : ledger){
             if(line.amount() > 0){
-                System.out.println(line);
+                System.out.println(line.getFormattedLedger());
             }
         }
     }
@@ -65,20 +78,22 @@ public class TransactionsHandler {
             return;
         }
 
+        ledger.sort(Comparator.comparing(Ledger::date).reversed());
+        System.out.println(Ledger.getFormattedLedgerTextHeader());
         for(Ledger line : ledger){
             if(line.amount() < 0 ){
-                System.out.println(line);
+                System.out.println(line.getFormattedLedger());
             }
         }
     }
 
-    public static void saveTransaction(String date, String time, String description, String vendor, double amount){
+    public static void saveTransaction(LocalDate date, LocalTime time, String description, String vendor, double amount){
 
         // creating a new Ledger entry within the ArrayList<Ledger>
         Ledger newEntry = new Ledger(date, time, description, vendor, amount);
         ledger.add(newEntry);
 
-        String entry = String.format("%s|%s|%s|%s|%.2f", date, time, description, vendor, amount);
+        String entry = newEntry.getFormattedLedger();
 
         // writing the new entry to the file
         try(FileWriter writer = new FileWriter("transactions.csv", true)){
