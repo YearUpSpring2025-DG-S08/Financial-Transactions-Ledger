@@ -4,14 +4,33 @@ import static com.pluralsight.ColorCodes.*;
 
 public class StyledMenus {
 
-    public static void styledTitle(String title){
-        String line = BLUE + "=".repeat(title.length() + 10) + RESET;
+    public static void styledHeader(String header){
+        String line = BLUE + "=".repeat(header.length() + 10) + RESET;
         System.out.println(line);
-        System.out.printf(GREEN_BACKGROUND + "     %s%n", title + "     " + RESET);
+        System.out.printf(GREEN_BACKGROUND + "     %s%n", header + "     " + RESET);
         System.out.println(line);
     }
 
-    public static void styledBoxHeader(String header){
+    public static String styledBoxTitle(String title){
 
+        // calculating space to center the title
+        int totalWidth = 50; // total width of output
+        title = title.trim();
+
+       // managing title length
+        if(title.length() > totalWidth){
+            title = title.substring(0, totalWidth);
+        }
+
+        int padding = (totalWidth - title.length()) / 2;
+
+        String centeredTitle = " ".repeat(Math.max(0, padding)) + title;
+
+        // create a divider based on header length
+        String divider = "-".repeat(totalWidth);
+
+        return divider + "\n" + centeredTitle + "\n" + divider;
     }
+
+
 }

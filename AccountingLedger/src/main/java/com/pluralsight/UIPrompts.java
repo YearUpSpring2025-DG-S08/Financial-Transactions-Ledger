@@ -13,7 +13,7 @@ public class UIPrompts {
     public static void showHomeScreen() {
         String choice;
         do {
-            styledTitle("Welcome to the Financial Transaction Tracker!");
+            styledHeader("Welcome to the Financial Transaction Tracker!");
             String homeScreenPrompt = """
                     Choose from the options below:
                     
@@ -52,7 +52,7 @@ public class UIPrompts {
     public static void showLedgerScreen() {
         String choice;
         do {
-            styledTitle("Ledger Menu");
+            styledHeader("Ledger Menu");
             String welcomeToLedgerPrompt = """
                     Choose from the options below:
                     
@@ -91,7 +91,7 @@ public class UIPrompts {
     public static void runReportsSearch() {
         String choice;
         do {
-            styledTitle("Reports Search Menu");
+            styledHeader("Reports Search Menu");
             String inputReportsPrompt = """
                     Choose one of the search options below:
                     

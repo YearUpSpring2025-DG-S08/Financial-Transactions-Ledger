@@ -43,6 +43,7 @@ public class TransactionReports {
         // using the .sort() method to sort what the Comparator.comparing() method defines how the data
         // needs to be sorted; in this case sorting by the Ledger dates
         // and sorted in chronological order
+        System.out.println("Transactions for: " + thisMonth + " - " + today);
         for (Ledger line : sortedMonthToDate) {
             System.out.println(line);
             // this for/each loop iterates through the ArrayList created for the sorted dates

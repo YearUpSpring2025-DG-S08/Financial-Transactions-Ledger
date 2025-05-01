@@ -17,6 +17,8 @@ public class TransactionsHandler {
         // combining the methods of addDeposit and addPayment together because of similar processes
         // creates a boolean for isPayment to distinguish between both methods
 
+        System.out.println(StyledMenus.styledBoxTitle("Add a Transaction"));
+
         // will auto complete the date to the current date when the entry is made
         LocalDate today = LocalDate.now();
 
@@ -43,6 +45,7 @@ public class TransactionsHandler {
     }
 
     public static void getALlTransactions(List<Ledger> ledger){
+        System.out.println(StyledMenus.styledBoxTitle("All Transactions"));
         System.out.println(Ledger.getFormattedLedgerTextHeader());
         ledger.removeIf(Objects::isNull);
         // this line will remove any instance of an object being read within the ledger as null
@@ -50,6 +53,7 @@ public class TransactionsHandler {
         // the .sort method and the Comparator.comparing() method will sort through the entries
         // in the ArrayList<>(Ledger) and compare them by the dates: Ledger::date
         // and set them in chronological order using .reversed() puts newest entries first(top of list)
+
         for (Ledger line : ledger) {
             if (line != null) {
                 System.out.println(line.getFormattedLedger());
@@ -63,6 +67,7 @@ public class TransactionsHandler {
             return;
         }
 
+        System.out.println(StyledMenus.styledBoxTitle("\uD83D\uDCB0 Deposit Transactions \uD83D\uDCB0"));
         ledger.sort(Comparator.comparing(Ledger::date).reversed());
         System.out.println(Ledger.getFormattedLedgerTextHeader());
         for(Ledger line : ledger){
@@ -78,6 +83,7 @@ public class TransactionsHandler {
             return;
         }
 
+        System.out.println(StyledMenus.styledBoxTitle("\uD83D\uDCB8 Payment Transactions \uD83D\uDCB8"));
         ledger.sort(Comparator.comparing(Ledger::date).reversed());
         System.out.println(Ledger.getFormattedLedgerTextHeader());
         for(Ledger line : ledger){
@@ -93,12 +99,12 @@ public class TransactionsHandler {
         Ledger newEntry = new Ledger(date, time, description, vendor, amount);
         ledger.add(newEntry);
 
-        String entry = newEntry.getFormattedLedger();
+        String entry = newEntry.toString();
 
         // writing the new entry to the file
         try(FileWriter writer = new FileWriter("transactions.csv", true)){
             writer.write(entry + "\n");
-            System.out.println("Transaction was successful!");
+            System.out.println("✨✨✨ Transaction was successful! ✨✨✨");
         } catch (IOException e) {
             System.out.println("Could not complete transaction" + e.getMessage());
         }

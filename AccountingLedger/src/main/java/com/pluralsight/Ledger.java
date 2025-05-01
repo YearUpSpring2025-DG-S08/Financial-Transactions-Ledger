@@ -1,8 +1,10 @@
 package com.pluralsight;
 
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public record Ledger(LocalDate date, LocalTime time, String description, String vendor, double amount) {
 // record Class erases the need to create a physical constructor + getters/setters
@@ -12,7 +14,11 @@ public record Ledger(LocalDate date, LocalTime time, String description, String 
     public static DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     public String getFormattedLedger() {
-        return String.format("%-12s | %-8s | %-20s | %-10s | %8.2f\n", this.date, this.time.format(timeFormatter), this.description, this.vendor, this.amount);
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
+        String formatAmount = String.valueOf(currencyFormat.format(amount));
+        String colorAmount = (amount < 0 ? ColorCodes.RED : ColorCodes.GREEN) + formatAmount + ColorCodes.RESET;
+        return String.format("%-12s | %-8s | %-20s | %-10s | %8s\n"
+                , this.date, this.time.format(timeFormatter), this.description, this.vendor, colorAmount);
     }
 
     public static String getFormattedLedgerTextHeader(){
@@ -27,11 +33,11 @@ public record Ledger(LocalDate date, LocalTime time, String description, String 
     }
 
     public String toString() {
-        return String.format("%s|%s|%s|%s|%.3f"
-                , this.date()
-                , this.time()
-                , this.description()
-                , this.vendor()
-                , this.amount());
+        return String.format("%-12s | %-8s | %-20s | %-10s | %8.2s\n"
+                , this.date
+                , this.time
+                , this.description
+                , this.vendor
+                , this.amount);
     }
 }
