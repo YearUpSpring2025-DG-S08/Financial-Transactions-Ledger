@@ -11,7 +11,7 @@ public record Ledger(LocalDate date, LocalTime time, String description, String 
 // this class is best when storing and retrieving data - there is no additional logic (just fields and logic)
 // a full class is best to add complex logic, validation, or other methods
 
-    public static DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+    public static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     public String getFormattedLedger() {
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
@@ -33,7 +33,7 @@ public record Ledger(LocalDate date, LocalTime time, String description, String 
     }
 
     public String toString() {
-        return String.format("%-12s | %-8s | %-20s | %-10s | %8.2s\n"
+        return String.format("\n%s|%s|%s|%s|%.2f\n"
                 , this.date
                 , this.time
                 , this.description

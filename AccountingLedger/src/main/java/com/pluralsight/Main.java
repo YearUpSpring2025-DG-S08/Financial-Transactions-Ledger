@@ -61,8 +61,8 @@ public class Main {
         try {
             LocalDate date = LocalDate.parse(temp[0].trim());
             LocalTime time = LocalTime.parse(temp[1].trim());
-            String description = temp[2].trim();
-            String vendor = temp[3].trim();
+            String description = temp[2].trim().substring(0, 1).toUpperCase() + temp[2].substring(1).toLowerCase();
+            String vendor = temp[3].trim().substring(0, 1).toUpperCase() + temp[3].substring(1).toLowerCase();
             double amount = Double.parseDouble(temp[4].trim());
 
             return new Ledger(date, time, description, vendor, amount);

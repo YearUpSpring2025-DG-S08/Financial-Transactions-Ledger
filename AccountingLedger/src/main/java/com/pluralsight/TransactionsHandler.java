@@ -1,5 +1,6 @@
 package com.pluralsight;
 
+import javax.xml.transform.TransformerConfigurationException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -7,21 +8,33 @@ import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Scanner;
 
 import static com.pluralsight.Main.console;
 import static com.pluralsight.Main.ledger;
 
 public class TransactionsHandler {
 
-    public static void addTransaction(boolean isPayment){
+    public static void addTransaction(boolean isPayment) {
         // combining the methods of addDeposit and addPayment together because of similar processes
         // creates a boolean for isPayment to distinguish between both methods
 
-        System.out.println(StyledMenus.styledBoxTitle("Add a Transaction"));
+        System.out.println(StyledUI.styledBoxTitle("\uD83D\uDCB0Add a Transaction\uD83D\uDCB8"));
 
-        // will auto complete the date to the current date when the entry is made
-        LocalDate today = LocalDate.now();
+        // prompt user to decide to make a future transaction or current
+        String inputDateOfTransactionPrompt = """
+                Would you like your transaction to be set in the future or current?
+                [F] Future Transaction
+                [C] Current Transaction""";
+        String transactionDate = console.promptForString(inputDateOfTransactionPrompt);
 
+        if (transactionDate.equals("C")) {
+            // will auto complete the date to the current date when the entry is made
+            transactionDate = String.valueOf(LocalDate.now());
+        } else {
+            transactionDate = console.promptForString("Enter the date for your future transaction: yyyy-MM-dd");
+        }
+        
         // will auto complete the time to the current time when the entry is made
         LocalTime now = LocalTime.now();
 
@@ -41,12 +54,12 @@ public class TransactionsHandler {
             amount = -Math.abs(amount); // this line will ensure that the amount given for a payment is negative
         }
 
-        saveTransaction(today, now, description, vendor, amount);
+        saveTransaction(LocalDate.parse(transactionDate), now, description, vendor, amount);
     }
 
     public static void getALlTransactions(List<Ledger> ledger){
-        System.out.println(StyledMenus.styledBoxTitle("All Transactions"));
-        System.out.println(Ledger.getFormattedLedgerTextHeader());
+        System.out.println(StyledUI.styledBoxTitle("All Transactions"
+        + Ledger.getFormattedLedgerTextHeader()));
         ledger.removeIf(Objects::isNull);
         // this line will remove any instance of an object being read within the ledger as null
         ledger.sort(Comparator.comparing(Ledger::date).reversed());
@@ -67,9 +80,9 @@ public class TransactionsHandler {
             return;
         }
 
-        System.out.println(StyledMenus.styledBoxTitle("\uD83D\uDCB0 Deposit Transactions \uD83D\uDCB0"));
-        ledger.sort(Comparator.comparing(Ledger::date).reversed());
+        System.out.println(StyledUI.styledBoxTitle("\uD83D\uDCB0Deposit Transactions\uD83D\uDCB0"));
         System.out.println(Ledger.getFormattedLedgerTextHeader());
+        ledger.sort(Comparator.comparing(Ledger::date).reversed());
         for(Ledger line : ledger){
             if(line.amount() > 0){
                 System.out.println(line.getFormattedLedger());
@@ -83,9 +96,9 @@ public class TransactionsHandler {
             return;
         }
 
-        System.out.println(StyledMenus.styledBoxTitle("\uD83D\uDCB8 Payment Transactions \uD83D\uDCB8"));
-        ledger.sort(Comparator.comparing(Ledger::date).reversed());
+        System.out.println(StyledUI.styledBoxTitle("\uD83D\uDCB8Payment Transactions\uD83D\uDCB8"));
         System.out.println(Ledger.getFormattedLedgerTextHeader());
+        ledger.sort(Comparator.comparing(Ledger::date).reversed());
         for(Ledger line : ledger){
             if(line.amount() < 0 ){
                 System.out.println(line.getFormattedLedger());

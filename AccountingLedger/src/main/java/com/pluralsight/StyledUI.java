@@ -2,7 +2,7 @@ package com.pluralsight;
 
 import static com.pluralsight.ColorCodes.*;
 
-public class StyledMenus {
+public class StyledUI {
 
     public static void styledHeader(String header){
         String line = BLUE + "=".repeat(header.length() + 10) + RESET;

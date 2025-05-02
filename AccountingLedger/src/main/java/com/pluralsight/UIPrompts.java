@@ -6,7 +6,7 @@ import static com.pluralsight.TransactionReports.*;
 import static com.pluralsight.TransactionReports.getTransactionsByPreviousYear;
 import static com.pluralsight.TransactionReports.getTransactionsByVendor;
 import static com.pluralsight.TransactionsHandler.*;
-import static com.pluralsight.StyledMenus.*;
+import static com.pluralsight.StyledUI.*;
 
 public class UIPrompts {
 
@@ -20,8 +20,7 @@ public class UIPrompts {
                     [D] Add deposit
                     [P] Make Payment - Debit
                     [L] Ledger Menu
-                    [X] Exit
-                    """;
+                    [X] Exit""";
             choice = console.promptForString(homeScreenPrompt).trim().toUpperCase();
 
             // put the choice code within a do/while loop so that it will rerun until the desired choice to exit the app is made

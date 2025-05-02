@@ -43,9 +43,9 @@ public class TransactionReports {
         // using the .sort() method to sort what the Comparator.comparing() method defines how the data
         // needs to be sorted; in this case sorting by the Ledger dates
         // and sorted in chronological order
-        System.out.println("Transactions for: " + thisMonth + " - " + today);
+        System.out.println(StyledUI.styledBoxTitle("Transactions for: " + thisMonth + " - " + today));
         for (Ledger line : sortedMonthToDate) {
-            System.out.println(line);
+            System.out.println(line.toString());
             // this for/each loop iterates through the ArrayList created for the sorted dates
         }
 
@@ -58,8 +58,9 @@ public class TransactionReports {
 
         List<Ledger> previousMonthToDate = getSortedDates(lastMonth, today);
         previousMonthToDate.sort(Comparator.comparing(Ledger::date));
+        System.out.println(StyledUI.styledBoxTitle("Transactions for: " + lastMonth + " - " + today));
         for (Ledger line : previousMonthToDate) {
-            System.out.println(line);
+            System.out.println(line.getFormattedLedger());
         }
     }
 
@@ -72,22 +73,24 @@ public class TransactionReports {
 
         List<Ledger> sortedYearToDate = getSortedDates(thisYear, today);
         sortedYearToDate.sort(Comparator.comparing(Ledger::date));
+        System.out.println(StyledUI.styledBoxTitle("Transactions for: " + thisYear + " - " + today));
         for (Ledger line : sortedYearToDate) {
-            System.out.println(line);
+            System.out.println(line.getFormattedLedger());
         }
     }
 
     public static void getTransactionsByPreviousYear() {
 
         LocalDate today = LocalDate.now();
-        LocalDate thisYear = today.minusYears(1).withDayOfMonth(1);
+        LocalDate previousYear = today.minusYears(1).withDayOfMonth(1);
         // this line of code takes today and subtracts 1 year,
         // and creates a day for that year of month: 1
 
-        List<Ledger> sortedPreviousYear = getSortedDates(thisYear, today);
+        List<Ledger> sortedPreviousYear = getSortedDates(previousYear, today);
         sortedPreviousYear.sort(Comparator.comparing(Ledger::date));
+        System.out.println(StyledUI.styledBoxTitle("Transactions for: " + previousYear + " - " + today));
         for (Ledger line : sortedPreviousYear) {
-            System.out.println(line);
+            System.out.println(line.getFormattedLedger());
         }
     }
 
@@ -96,11 +99,12 @@ public class TransactionReports {
                 Please input a vendor for search:""";
         String input = console.promptForString(inputVendorSearchPrompt);
 
+        System.out.println(StyledUI.styledBoxTitle("Transactions by Vendor: " + input));
         boolean found = false;
         for (Ledger line : ledger) {
             if (line != null && line.vendor().toLowerCase().contains(input.toLowerCase())) {
                 if (!found) {
-                    System.out.println(line);
+                    System.out.println(line.getFormattedLedger());
                     found = true;
                 }
             }
@@ -116,11 +120,12 @@ public class TransactionReports {
         // create ArrayList<> to hold the filtered search
         List<Ledger> filteredSearch = new ArrayList<>(ledger);
 
+        System.out.println(StyledUI.styledBoxTitle("Transactions by Custom Search"));
         // prompt user for individual search criteria
         while(true) {
             System.out.print("Enter Start date or leave blank: ");
             String startDate = scanner.nextLine().trim();
-            if (!startDate.isBlank()) {
+            if (startDate.isBlank()) {
                 scanner.nextLine();
                 break;
             }
@@ -185,7 +190,7 @@ public class TransactionReports {
         } else{
             System.out.println("Search results:");
             for(Ledger line : filteredSearch) {
-                System.out.println(line);
+                System.out.println(line.getFormattedLedger());
             }
         }
     }
