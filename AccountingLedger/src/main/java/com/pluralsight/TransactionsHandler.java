@@ -1,6 +1,5 @@
 package com.pluralsight;
 
-import javax.xml.transform.TransformerConfigurationException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -8,7 +7,6 @@ import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Scanner;
 
 import static com.pluralsight.Main.console;
 import static com.pluralsight.Main.ledger;
@@ -34,7 +32,7 @@ public class TransactionsHandler {
         } else {
             transactionDate = console.promptForString("Enter the date for your future transaction: yyyy-MM-dd");
         }
-        
+
         // will auto complete the time to the current time when the entry is made
         LocalTime now = LocalTime.now();
 
