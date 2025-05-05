@@ -153,20 +153,18 @@ public class TransactionReports {
 
         System.out.print("Enter description or leave blank: ");
         String description = scanner.nextLine().toLowerCase();
-        while (!description.isBlank()) {
+        if(!description.isBlank()) {
             filteredSearch.removeIf(entry -> !entry.description().toLowerCase().contains(description));
-            break;
             // the .removeIf method from the List<> interface will remove any entry
             // that does not contain what the user input
         }
 
         System.out.print("Enter vendor or leave blank: ");
         String vendor = scanner.nextLine().toLowerCase();
-        while (!vendor.isBlank()) {
+        if (!vendor.isBlank()) {
             filteredSearch.removeIf(entry -> entry == null || !entry.vendor().toLowerCase().contains(vendor));
             // the .removeIf method from the List<> interface will remove any entry
             // that does not contain what the user input
-            break;
         }
 
             System.out.print("Enter amount or leave blank: ");
