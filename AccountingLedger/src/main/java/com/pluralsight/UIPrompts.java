@@ -5,7 +5,7 @@ import static com.pluralsight.Main.ledger;
 import static com.pluralsight.TransactionReports.*;
 import static com.pluralsight.TransactionReports.getTransactionsByPreviousYear;
 import static com.pluralsight.TransactionReports.getTransactionsByVendor;
-import static com.pluralsight.TransactionsHandler.*;
+import static com.pluralsight.LedgerTransactions.*;
 import static com.pluralsight.StyledUI.*;
 
 public class UIPrompts {
@@ -58,7 +58,8 @@ public class UIPrompts {
                     [A] Display all entries
                     [D] Display deposits
                     [P] Display payments
-                    [R] Run reports""";
+                    [R] Run reports
+                    [H] Go Back to Home Page""";
             choice = console.promptForString(welcomeToLedgerPrompt).trim().toUpperCase();
 
             switch (choice) {

@@ -4,6 +4,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -11,53 +13,71 @@ import java.util.Objects;
 import static com.pluralsight.Main.console;
 import static com.pluralsight.Main.ledger;
 
-public class TransactionsHandler {
+public class LedgerTransactions {
 
     public static void addTransaction(boolean isPayment) {
         // combining the methods of addDeposit and addPayment together because of similar processes
         // creates a boolean for isPayment to distinguish between both methods
-
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
         System.out.println(StyledUI.styledBoxTitle("\uD83D\uDCB0Add a Transaction\uD83D\uDCB8"));
 
+        String dateOfTransaction;
+        String transactionDate = "";
         // prompt user to decide to make a future transaction or current
         String inputDateOfTransactionPrompt = """
                 Would you like your transaction to be set in the future or current?
                 [F] Future Transaction
                 [C] Current Transaction""";
-        String transactionDate = console.promptForString(inputDateOfTransactionPrompt);
+        dateOfTransaction = console.promptForString(inputDateOfTransactionPrompt).toUpperCase();
 
-        if (transactionDate.equals("C")) {
-            // will auto complete the date to the current date when the entry is made
-            transactionDate = String.valueOf(LocalDate.now());
-        } else {
-            transactionDate = console.promptForString("Enter the date for your future transaction: yyyy-MM-dd");
-        }
 
-        // will auto complete the time to the current time when the entry is made
-        LocalTime now = LocalTime.now();
+            switch (dateOfTransaction) {
+                case "C":
+                    // will auto complete the date to the current date when the entry is made
+                    transactionDate = String.valueOf(LocalDate.now());
+                    break;
+                case "F":
+                    boolean validDate = false;
+                    while (!validDate) {
+                        dateOfTransaction = console.promptForString("Enter the date for your future transaction: MM/dd/yyyy");
+                        try {
+                            transactionDate = String.valueOf(LocalDate.parse(dateOfTransaction, formatter));
+                            validDate = true;
+                        } catch (DateTimeParseException e) {
+                            System.out.println("Invalid date format. Please try again: MM/dd/yyyy");
+                        }
+                    }
+                    break;
+                default:
+                    System.out.println("Invalid entry. Please try again!");
+                    break;
+            }
 
-        String inputDescriptionPrompt = """
+            // will auto complete the time to the current time when the entry is made
+            LocalTime now = LocalTime.now();
+
+            String inputDescriptionPrompt = """
                     Add description:""";
-        String description = console.promptForString(inputDescriptionPrompt);
+            String description = console.promptForString(inputDescriptionPrompt);
 
-        String inputVendorPrompt = """
+            String inputVendorPrompt = """
                     Add vendor information:""";
-        String vendor = console.promptForString(inputVendorPrompt);
+            String vendor = console.promptForString(inputVendorPrompt);
 
-        String inputAmountPrompt = """
+            String inputAmountPrompt = """
                     Input an amount: \n""";
-        double amount = console.promptForDouble(inputAmountPrompt);
+            double amount = console.promptForDouble(inputAmountPrompt);
 
-        if(isPayment){
-            amount = -Math.abs(amount); // this line will ensure that the amount given for a payment is negative
+            if (isPayment) {
+                amount = -Math.abs(amount); // this line will ensure that the amount given for a payment is negative
+            }
+
+            saveTransaction(LocalDate.parse(transactionDate), now, description, vendor, amount);
         }
-
-        saveTransaction(LocalDate.parse(transactionDate), now, description, vendor, amount);
-    }
 
     public static void getALlTransactions(List<Ledger> ledger){
-        System.out.println(StyledUI.styledBoxTitle("All Transactions"
-        + Ledger.getFormattedLedgerTextHeader()));
+        System.out.println(StyledUI.styledBoxTitle("All Transactions"));
+        System.out.println(Ledger.getFormattedLedgerTextHeader());
         ledger.removeIf(Objects::isNull);
         // this line will remove any instance of an object being read within the ledger as null
         ledger.sort(Comparator.comparing(Ledger::date).reversed());
@@ -81,6 +101,8 @@ public class TransactionsHandler {
         System.out.println(StyledUI.styledBoxTitle("\uD83D\uDCB0Deposit Transactions\uD83D\uDCB0"));
         System.out.println(Ledger.getFormattedLedgerTextHeader());
         ledger.sort(Comparator.comparing(Ledger::date).reversed());
+        ledger.removeIf(Objects::isNull);
+
         for(Ledger line : ledger){
             if(line.amount() > 0){
                 System.out.println(line.getFormattedLedger());
@@ -97,6 +119,8 @@ public class TransactionsHandler {
         System.out.println(StyledUI.styledBoxTitle("\uD83D\uDCB8Payment Transactions\uD83D\uDCB8"));
         System.out.println(Ledger.getFormattedLedgerTextHeader());
         ledger.sort(Comparator.comparing(Ledger::date).reversed());
+        ledger.removeIf(Objects::isNull);
+
         for(Ledger line : ledger){
             if(line.amount() < 0 ){
                 System.out.println(line.getFormattedLedger());
@@ -114,7 +138,7 @@ public class TransactionsHandler {
 
         // writing the new entry to the file
         try(FileWriter writer = new FileWriter("transactions.csv", true)){
-            writer.write(entry + "\n");
+            writer.write("\n" + entry);
             System.out.println("✨✨✨ Transaction was successful! ✨✨✨");
         } catch (IOException e) {
             System.out.println("Could not complete transaction" + e.getMessage());

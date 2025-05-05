@@ -33,11 +33,16 @@ public class Main {
 
             while ((dataString = reader.readLine()) != null) {
                 // adds each entry that is being read into the ArrayList<newEntry>
+                Ledger entry = getTransactionsFromEncodedString(dataString);
+                if(entry != null){
                 entryList.add(getTransactionsFromEncodedString(dataString));
+                } else{
+                    System.out.println("Skipped a null or malformed transaction line");
+                }
             }
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Could not read from transactions.csv", e);
         }
         return entryList;
     }
@@ -55,7 +60,8 @@ public class Main {
         String[] temp = encodedLedger.trim().split(Pattern.quote("|"));
 
         if (temp.length != 5) {
-            throw new IllegalArgumentException("Error occurs: " + Arrays.toString(temp));
+            System.out.println("Skipping malformed line: " + Arrays.toString(temp));
+            return null;
         }
 
         try {

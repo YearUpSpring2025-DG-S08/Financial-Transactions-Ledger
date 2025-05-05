@@ -17,7 +17,7 @@ public record Ledger(LocalDate date, LocalTime time, String description, String 
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
         String formatAmount = String.valueOf(currencyFormat.format(amount));
         String colorAmount = (amount < 0 ? ColorCodes.RED : ColorCodes.GREEN) + formatAmount + ColorCodes.RESET;
-        return String.format("%-12s | %-8s | %-20s | %-10s | %8s\n"
+        return String.format("%-12s | %-8s | %-22s | %-18s | %10s"
                 , this.date, this.time.format(timeFormatter), this.description, this.vendor, colorAmount);
     }
 
@@ -33,9 +33,9 @@ public record Ledger(LocalDate date, LocalTime time, String description, String 
     }
 
     public String toString() {
-        return String.format("\n%s|%s|%s|%s|%.2f\n"
+        return String.format("%s|%s|%s|%s|%.2f"
                 , this.date
-                , this.time
+                , this.time.format(timeFormatter)
                 , this.description
                 , this.vendor
                 , this.amount);

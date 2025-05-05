@@ -121,78 +121,75 @@ public class TransactionReports {
         List<Ledger> filteredSearch = new ArrayList<>(ledger);
 
         System.out.println(StyledUI.styledBoxTitle("Transactions by Custom Search"));
+
         // prompt user for individual search criteria
-        while(true) {
-            System.out.print("Enter Start date or leave blank: ");
-            String startDate = scanner.nextLine().trim();
-            if (startDate.isBlank()) {
-                scanner.nextLine();
+        System.out.print("Enter Start date or leave blank: ");
+        String startDate = scanner.nextLine().trim();
+        while (!startDate.isBlank()) {
+            try {
+                LocalDate start = LocalDate.parse(startDate, FORMATTER);
+                filteredSearch.removeIf(entry -> entry.date().isBefore(start));
+                // the .removeIf method from the List<> interface will remove any entry before the given startDate
                 break;
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid date format. Try again");
+                startDate = scanner.nextLine().trim();
             }
-                try {
-                    LocalDate start = LocalDate.parse(startDate, FORMATTER);
-                    filteredSearch.removeIf(entry -> entry.date().isBefore(start));
-                    // the .removeIf method from the List<> interface will remove any entry before the given startDate
-                    break;
-                } catch (DateTimeParseException e) {
-                    System.out.println("Invalid date format. Try Again");
-                    scanner.nextLine();
-                }
         }
 
-        while(true) {
-            System.out.print("Enter End date or leave blank: ");
-            String endDate = scanner.nextLine();
-            if (!endDate.isBlank()) {
+        System.out.print("Enter End date or leave blank: ");
+        String endDate = scanner.nextLine().trim();
+        while (!endDate.isBlank()) {
+            try {
+                LocalDate end = LocalDate.parse(endDate, FORMATTER);
+                filteredSearch.removeIf(entry -> entry.date().isAfter(end));
+                // the .removeIf method from the List<> interface will remove any entry after the given endDate
                 break;
+            } catch (DateTimeParseException e) {
+                System.out.println("Invalid date format. Try again.");
+                endDate = scanner.nextLine().trim();
             }
-                try {
-                    LocalDate end = LocalDate.parse(endDate, FORMATTER);
-                    filteredSearch.removeIf(entry -> !entry.date().isAfter(end));
-                    // the .removeIf method from the List<> interface will remove any entry after the given endDate
-                } catch (DateTimeParseException e) {
-                    System.out.println("Invalid date format");
-                }
         }
 
         System.out.print("Enter description or leave blank: ");
         String description = scanner.nextLine().toLowerCase();
-
-        if (!description.isBlank()) {
+        while (!description.isBlank()) {
             filteredSearch.removeIf(entry -> !entry.description().toLowerCase().contains(description));
+            break;
             // the .removeIf method from the List<> interface will remove any entry
             // that does not contain what the user input
         }
 
         System.out.print("Enter vendor or leave blank: ");
         String vendor = scanner.nextLine().toLowerCase();
-
-        if (!vendor.isBlank()) {
-            filteredSearch.removeIf(entry -> !entry.vendor().toLowerCase().contains(vendor));
+        while (!vendor.isBlank()) {
+            filteredSearch.removeIf(entry -> entry == null || !entry.vendor().toLowerCase().contains(vendor));
             // the .removeIf method from the List<> interface will remove any entry
             // that does not contain what the user input
+            break;
         }
 
-        System.out.print("Enter amount or leave blank: ");
-        String amount = scanner.nextLine();
-
-        if (!amount.isBlank()) {
-            try {
-                double inputAmount = Double.parseDouble(amount);
-                filteredSearch.removeIf(entry -> entry.amount() != inputAmount);
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid amount entered");
+            System.out.print("Enter amount or leave blank: ");
+            String amount = scanner.nextLine();
+            while(!amount.isBlank()){
+                try {
+                    double inputAmount = Double.parseDouble(amount);
+                    filteredSearch.removeIf(entry -> entry == null || entry.amount() != inputAmount);
+                    break;
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid amount entered. Try again");
+                    amount = scanner.nextLine().trim();
+                }
             }
-        }
 
-        if(filteredSearch.isEmpty()){
-            System.out.println("There is not enough data to search");
-        } else{
-            System.out.println("Search results:");
-            for(Ledger line : filteredSearch) {
-                System.out.println(line.getFormattedLedger());
+            if (filteredSearch.isEmpty()) {
+                System.out.println("There is not enough data to search");
+            } else {
+                System.out.println("Search results:");
+                for (Ledger line : filteredSearch) {
+                    System.out.println(line.getFormattedLedger());
+                }
             }
         }
     }
-}
 
