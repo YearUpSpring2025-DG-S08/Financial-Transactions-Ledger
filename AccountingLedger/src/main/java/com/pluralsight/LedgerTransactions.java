@@ -18,7 +18,7 @@ public class LedgerTransactions {
     public static void addTransaction(boolean isPayment) {
         // combining the methods of addDeposit and addPayment together because of similar processes
         // creates a boolean for isPayment to distinguish between both methods
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         System.out.println(StyledUI.styledBoxTitle("\uD83D\uDCB0Add a Transaction\uD83D\uDCB8"));
 
         String dateOfTransaction;
@@ -39,12 +39,12 @@ public class LedgerTransactions {
                 case "F":
                     boolean validDate = false;
                     while (!validDate) {
-                        dateOfTransaction = console.promptForString("Enter the date for your future transaction: MM/dd/yyyy");
+                        dateOfTransaction = console.promptForString("Enter the date for your future transaction: yyyy-MM-dd");
                         try {
                             transactionDate = String.valueOf(LocalDate.parse(dateOfTransaction, formatter));
                             validDate = true;
                         } catch (DateTimeParseException e) {
-                            System.out.println("Invalid date format. Please try again: MM/dd/yyyy");
+                            System.out.println("Invalid date format. Please try again: yyyy-MM-dd");
                         }
                     }
                     break;
