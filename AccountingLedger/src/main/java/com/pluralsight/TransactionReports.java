@@ -51,7 +51,7 @@ public class TransactionReports {
 
     }
 
-    public static void getTransactionsByPreviousMonthtoDate() {
+    public static void getTransactionsByPreviousMonthToDate() {
 
         LocalDate today = LocalDate.now();
         LocalDate lastMonth = today.minusMonths(1).withDayOfMonth(1);
@@ -203,4 +203,3 @@ public class TransactionReports {
         }
     }
 }
-
