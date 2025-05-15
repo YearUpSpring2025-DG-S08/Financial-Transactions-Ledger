@@ -112,7 +112,7 @@ public class UIPrompts {
                     break;
                 case "2":
                     // previous month to date search
-                    getTransactionsByPreviousMonthtoDate();
+                    getTransactionsByPreviousMonthToDate();
                     break;
                 case "3":
                     // year to date search
